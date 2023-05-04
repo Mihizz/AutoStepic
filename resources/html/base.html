@@ -1,22 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html style="background-image:radial-gradient(#4E65FF,#92EFFD);>
   <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Welcome to autostepic</title>
+    <title>AutoStepic | Hotel Guma</title>
+      <link rel="stylesheet" href="../public/css/screen.css">
 
-    <!-- styles -->
+      <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+      <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+      <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bulma.min.js"></script>
+
+      <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bulma.min.css">
+      <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.css'>
+
+      <!-- styles -->
     {% style "/assets/bulma/css/bulma.min.css" %}
     {% style "/assets/material-icons/css/material-icons.min.css" %}
 
-    {% style "/css/screen.css" %}
   </head>
+  <script>
+      $(document).ready(function () {
+          $('#table').DataTable();
+      });
+  </script>
+  <style>
+      h1{
+          text-decoration: underline;
+      }
+
+      .listView ul{
+        height:500px;
+        overflow:hidden;
+          overflow-y:scroll;
+      }
+
+  </style>
   <body>
       <!-- navbar -->
       <nav class="navbar is-info">
           <div class="container">
               <div class="navbar-brand">
-                  <a class="navbar-item" href="/" style="font-weight:bold;">autostepic</a>
+                  <a class="navbar-item" href="/" style="font-weight:bold;">AutoStepic</a>
                   <span class="navbar-burger burger" data-target="nav-menu">
                       <span></span>
                       <span></span>
@@ -25,8 +49,10 @@
               </div>
               <div id="nav-menu" class="navbar-menu">
                   <div class="navbar-start">
-                      <a href="/" class="navbar-item{% ifequal page "home.html" %} is-active{%endifequal%}">Home</a>
-                      <a href="/about" class="navbar-item{% ifequal page "about.html" %} is-active{%endifequal%}">About</a>
+                      <a href="/" class="navbar-item{% ifequal page "home.html" %} is-active{%endifequal%}">Pocetna</a>
+                      <a href="/musterije" class="navbar-item{% ifequal page "musterije.html" %} is-active{%endifequal%}">Musterije</a>
+                      <a href="/skladiste" class="navbar-item{% ifequal page "skladiste.html" %} is-active{%endifequal%}">Skladiste</a>
+                      <a href="/mesta" class="navbar-item{% ifequal page "mesta.html" %} is-active{%endifequal%}">Mesta</a>
                   </div>
               </div>
           </div>
