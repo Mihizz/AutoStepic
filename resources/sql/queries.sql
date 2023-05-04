@@ -26,3 +26,26 @@ WHERE id = :id
 
 --------------------------------------
 --------------------------------------
+
+-- :name create-mesto! :! :n
+-- :doc kreira novo mesto
+    INSERT INTO mesto
+(red, kolona, sprat, zauzeto)
+VALUES (:red, :kolona, :sprat, 0)
+
+-- :name get-mesta :? :*
+-- :doc prikazuje listu svih mesta
+SELECT * from mesto
+
+--------------------------------------
+--------------------------------------
+
+-- :name proveri-mesto :! :1
+-- :doc proveri da li je mesto slobodno pre brisanja mesta
+SELECT * FROM skladiste
+WHERE idMesto = :idMesto
+
+-- :name proveri-musteriju :? :1
+-- :doc proveri da li je musterija ima rezervacije pre brisanja musterija
+SELECT * FROM skladiste
+WHERE idMusterije = :idMusterije

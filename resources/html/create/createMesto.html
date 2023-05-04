@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            <h1>DODAVANJE MESTA</h1>
+            <div class="columns">
+                <div class="column">
+                    <form method="POST" action="/dodajMesto">
+                        {% csrf-field %}
+                        <div class="field">
+                            <label class="label" for="red">
+                                Red
+                            </label>
+                            {% if errors.red %}
+                            <div class="notification is-danger">
+                                {{errors.red|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="text"
+                                   name="red"
+                                   value="{{red}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="kolona">
+                                Kolona
+                            </label>
+                            {% if errors.kolona %}
+                            <div class="notification is-danger">
+                                {{errors.kolona|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   name="kolona"
+                                   value="{{kolona}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="sprat">
+                                Sprat
+                            </label>
+                            {% if errors.sprat %}
+                            <div class="notification is-danger">
+                                {{errors.sprat|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   name="sprat"
+                                   value="{{sprat}}" />
+                        </div>
+                        <input type="submit"
+                               class="button is-primary"
+                               value="Dodaj mesto" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

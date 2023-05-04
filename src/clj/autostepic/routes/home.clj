@@ -45,6 +45,22 @@
      "delete/deleteMusterija.html"
      (select-keys flash [:id :errors])))
 
+;------------------------------------------------
+
+;MESTA
+(defn mesta-page [request]
+  (layout/render
+   request
+   "mesta.html"
+   {:mesta (db/get-mesta)}))
+
+;DODAJ MESTO
+(defn createMesto-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "create/createMesto.html"
+     (select-keys flash [:red :kolona :sprat :errors])))
+
 ;---------------------------------------------------------------------------------
 ; --- SHEMA ----------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -86,6 +102,25 @@
    		{:message "ID must be positive number!"
          :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]])
 
+;-----------------------------------------
+
+;MESTO (INSERT)
+(def mestoI-schema
+  	[[:red
+  		st/required
+  		st/string
+  		{:message "Row must be single character (A-Z)"
+         :validate (fn [red] (= (count red) 1))}]
+  	[:kolona
+  		st/required
+  		{:message "Column must be positive number!"
+         :validate (fn [kolona] (> (Integer/parseInt (re-find #"\A-?\d+" kolona)) 0))}]
+  	[:sprat
+  		st/required
+  		{:message "Floor must be positive number!"
+         :validate (fn [sprat] (> (Integer/parseInt (re-find #"\A-?\d+" sprat)) 0))}]])
+
+
 ;---------------------------------------------------------------------------------
 ; --- VALIDACIJA -----------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -98,11 +133,17 @@
 (defn validate-musterijaU [params]
 (first (st/validate params musterijaU-schema)))
 
-;-----------------------------
+
 
 ;(DELETE)
 (defn validate-delete [params]
 (first (st/validate params delete-schema)))
+
+;-----------------------------
+
+;MESTO(INSERT)
+(defn validate-mestoI [params]
+(first (st/validate params mestoI-schema)))
 
 ;---------------------------------------------------------------------------------
 ; --- METODE ---------------------------------------------------------------------
@@ -149,6 +190,18 @@
                 (db/delete-musterija! params)
                 (response/found "/musterije")))))))))
 
+;---------------------------------------------------------------------------------
+
+;KREIRANJE MESTA
+(defn create-mesto! [{:keys [params]}]
+  (if-let [errors (validate-mestoI params)]
+    (-> (response/found "/dodavanjeMesta")
+        (assoc :flash (assoc params :errors errors)))
+    (do
+        (db/create-mesto! params)
+        (response/found "/mesta"))))
+
+
 ;-----------------------------------------------------------------------------------------
 ; --- RUTIRANJE --------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------------------
@@ -163,6 +216,8 @@
    ["/dodajMusteriju" {:post create-musterija!}]
    ["/editujMusteriju" {:post update-musterija!}]
    ["/obrisiMusteriju" {:post delete-musterija!}]
+   ;-------
+   ["/dodajMesto" {:post create-mesto!}]
 
    ;--STRANICE------
    ["/" {:get home-page}]
@@ -171,4 +226,7 @@
    ["/dodavanjeMusterije" {:get createMusterija-page}]
    ["/izmeniMusteriju" {:get updateMusterija-page}]
    ["/izbrisiMusteriju" {:get deleteMusterija-page}]
+   ;-------
+   ["/mesta" {:get mesta-page}]
+   ["/dodavanjeMesta" {:get createMesto-page}]
 

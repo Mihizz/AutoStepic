@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="../public/css/screen.css">{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="columns is-centered">
+        <div class="column">
+            <!-- Content -->
+            <div class="columns">
+                <div class="column" style="text-align: center">
+                    <h1>MESTA</h1>
+                    <table id="table" class="table is-bordered is-striped is-hoverable">
+                        <thead style="background-color: cornflowerblue">
+                        <tr>
+                            <th>#</th>
+                            <th>Red</th>
+                            <th>Kolona</th>
+                            <th>Sprat</th>
+                            <th>Zauzeto</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in mesta %}
+                        <tr>
+                            <td>{{item.id}}</td>
+                            <td>{{item.red}}</td>
+                            <td>{{item.kolona}}</td>
+                            <td>{{item.sprat}}</td>
+                            <td>{{item.zauzeto}}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <h4>Akcije nad mestima</h4>
+                    <a href="/dodavanjeMesta" style="margin: 10px;" class="button is-info">Dodaj</a>
+                    <a href="/izmeniMesto" style="margin: 10px;" class="button is-warning">Izmeni</a>
+                    <a href="/izbrisiMesto" style="margin: 10px;" class="button is-danger">Obrisi</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
