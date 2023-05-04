@@ -5,6 +5,7 @@
    [clojure.java.io :as io]
    [autostepic.middleware :as middleware]
    [ring.util.response]
+   [struct.core :as st]
    [ring.util.http-response :as response]))
 
 ;---------------------------------------------------------------------------------
@@ -77,13 +78,49 @@
 
 ;------------------------------------------------
 
+;SKLADISTE
+(defn skladiste-page [request]
+  (layout/render
+   request
+   "skladiste.html"
+   {:gume (db/get-gume)}))
+
+;DODAJ GUME
+(defn createGume-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "create/createSkladiste.html"
+     (merge {:musterije (db/get-musterije)}
+            {:mesta (db/get-slobodna-mesta)}
+     (select-keys flash [:sirina :profil :precnik :sezona :dot :kolicina :idMesto :idMusterije :errors]))))
+
+;IZMENI GUME
+(defn updateGume-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "edit/editSkladiste.html"
+     (merge {:musterije (db/get-musterije)}
+                 {:mesta (db/get-slobodna-mesta)}
+          (select-keys flash [:id :sirina :profil :precnik :sezona :dot :kolicina :idMesto :idMusterije :errors]))))
+
+;IZBRISI MESTO
+(defn deleteGume-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "delete/deleteSkladiste.html"
+     (select-keys flash [:id :errors])))
+
 ;---------------------------------------------------------------------------------
 ; --- SHEMA ----------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
 
-;MUSTERIJA (INSERT)
-(def musterijaI-schema
-  	[[:ime
+;MUSTERIJA(UPDATE)
+(def musterijaU-schema
+    [[:id
+  		st/required
+  		{:message "ID must be positive number!"
+        :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]
+  	[:ime
   		st/required
   		st/string]
   	[:prezime
@@ -93,13 +130,9 @@
   		st/required
   		st/email]])
 
-;MUSTERIJA(UPDATE)
-(def musterijaU-schema
-    [[:id
-  		st/required
-  		{:message "ID must be positive number!"
-        :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]
-  	[:ime
+;MUSTERIJA (INSERT)
+(def musterijaI-schema
+  	[[:ime
   		st/required
   		st/string]
   	[:prezime
@@ -118,7 +151,7 @@
    		{:message "ID must be positive number!"
          :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]])
 
-;-----------------------------------------
+; --------------------------------------
 
 ;MESTO (INSERT)
 (def mestoI-schema
@@ -156,6 +189,72 @@
       	{:message "Floor must be positive number!"
          :validate (fn [sprat] (> (Integer/parseInt (re-find #"\A-?\d+" sprat)) 0))}]])
 
+; ----------------------------------
+
+;GUME (INSERT)
+(def gumeI-schema
+  	[[:sirina
+        st/required
+      	{:message "Column must be positive number!"
+         :validate (fn [sirina] (> (Integer/parseInt (re-find #"\A-?\d+" sirina)) 0))}]
+    [:profil
+            st/required
+          	{:message "Column must be positive number!"
+             :validate (fn [profil] (> (Integer/parseInt (re-find #"\A-?\d+" profil)) 0))}]
+    [:precnik
+            st/required
+          	{:message "Column must be positive number!"
+             :validate (fn [precnik] (> (Integer/parseInt (re-find #"\A-?\d+" precnik)) 0))}]
+    [:dot
+                st/required
+              	{:message "Column must be positive number!"
+                 :validate (fn [dot] (> (Integer/parseInt (re-find #"\A-?\d+" dot)) 0))}
+                {:message "Year must be a 4 digit number!"
+                 :validate (fn [dot] (= (count dot) 4))}]
+   [:sezona
+               st/required
+               st/string]
+   [:idMusterije
+                  st/required
+                	{:message "Column must be positive number!"
+                   :validate (fn [idMusterije] (> (Integer/parseInt (re-find #"\A-?\d+" idMusterije)) 0))}]
+   [:idMesto
+                  st/required
+                	{:message "Column must be positive number!"
+                   :validate (fn [idMesto] (> (Integer/parseInt (re-find #"\A-?\d+" idMesto)) 0))}]])
+
+;GUME (INSERT)
+(def gumeU-schema
+    [[:id
+  		st/required
+  		{:message "ID must be positive number!"
+        :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]
+  	[:sirina
+        st/required
+      	{:message "Column must be positive number!"
+         :validate (fn [sirina] (> (Integer/parseInt (re-find #"\A-?\d+" sirina)) 0))}]
+    [:profil
+            st/required
+          	{:message "Column must be positive number!"
+             :validate (fn [profil] (> (Integer/parseInt (re-find #"\A-?\d+" profil)) 0))}]
+    [:precnik
+            st/required
+          	{:message "Column must be positive number!"
+             :validate (fn [precnik] (> (Integer/parseInt (re-find #"\A-?\d+" precnik)) 0))}]
+    [:dot
+                st/required
+              	{:message "Column must be positive number!"
+                 :validate (fn [dot] (> (Integer/parseInt (re-find #"\A-?\d+" dot)) 0))}
+                {:message "Year must be a 4 digit number!"
+                 :validate (fn [dot] (= (count dot) 4))}]
+   [:idMusterije
+                  st/required
+                	{:message "Column must be positive number!"
+                   :validate (fn [idMusterije] (> (Integer/parseInt (re-find #"\A-?\d+" idMusterije)) 0))}]
+   [:idMesto
+                  st/required
+                	{:message "Column must be positive number!"
+                   :validate (fn [idMesto] (> (Integer/parseInt (re-find #"\A-?\d+" idMesto)) 0))}]])
 
 ;---------------------------------------------------------------------------------
 ; --- VALIDACIJA -----------------------------------------------------------------
@@ -175,7 +274,7 @@
 (defn validate-delete [params]
 (first (st/validate params delete-schema)))
 
-;-----------------------------
+; ---------------------------
 
 ;MESTO(INSERT)
 (defn validate-mestoI [params]
@@ -186,6 +285,14 @@
 (first (st/validate params mestoU-schema)))
 
 ; ---------------------------
+
+;MESTO(INSERT)
+(defn validate-gumeI [params]
+(first (st/validate params gumeI-schema)))
+
+;MESTO(UPDATE)
+(defn validate-gumeU [params]
+(first (st/validate params gumeU-schema)))
 
 ;---------------------------------------------------------------------------------
 ; --- METODE ---------------------------------------------------------------------
@@ -200,7 +307,7 @@
         (db/create-musterija! params)
         (response/found "/musterije"))))
 
-;UPDATE MUSTERIJE
+ ;UPDATE MUSTERIJE
 (defn update-musterija! [{:keys [params]}]
    (let [errors (validate-musterijaU params)]
      (if errors
@@ -277,25 +384,85 @@
 
 ;---------------------------------------------------------------------------------
 
+;SKLADISTE
+(defn create-gume! [{:keys [params]}]
+   (let [errors (validate-gumeI params)]
+     (if errors
+       (-> (response/found "/dodavanjeGuma")
+           (assoc :flash (assoc params :errors errors)))
+       (let [mesto (db/get-slobodna-mesta-by-id {:id (:idMesto params)})]
+         (if-not mesto
+           (-> (response/found "/dodavanjeGuma")
+               (assoc :flash (assoc params :errors {:idMesto "Pick ID that is in listView places!!!"})))
+           (let [musterija (db/get-musterija-by-id {:id (:idMusterije params)})]
+             (if-not musterija
+               (-> (response/found "/dodavanjeGuma")
+                   (assoc :flash (assoc params :errors {:idMusterije "Pick ID that is in listView customers!!!"})))
+               (do
+                 (db/create-gume! params)
+                 (db/popuni-mesto! {:id (:idMesto params) :kolicina (:kolicina params)})
+                 (response/found "/skladiste")))))))))
+
+;SKLADISTE
+(defn update-gume! [{:keys [params]}]
+  (let [errors (validate-gumeU params)]
+    (if errors
+      (-> (response/found "/izmeniGume")
+          (assoc :flash (assoc params :errors errors)))
+      (let [mesto (db/get-slobodna-mesta-by-id {:id (:idMesto params)})]
+        (if-not mesto
+          (-> (response/found "/izmeniGume")
+              (assoc :flash (assoc params :errors {:idMesto "Pick ID that is in listView places!!!"})))
+          (let [musterija (db/get-musterija-by-id {:id (:idMusterije params)})]
+            (if-not musterija
+              (-> (response/found "/izmeniGume")
+                  (assoc :flash (assoc params :errors {:idMusterije "Pick ID that is in listView customers!!!"})))
+              (let [gume (db/get-gume-by-id {:id (:id params)})]
+                (if-not gume
+                  (-> (response/found "/izmeniGume")
+                      (assoc :flash (assoc params :errors {:id "Reservation with ID doesnt exist!!!"})))
+                  (do
+                    (db/update-gume! params)
+                    (db/oslobodi-mesto! {:id (:idmesto gume)})
+                    (db/popuni-mesto! {:id (:idMesto params) :kolicina (:kolicina params)})
+                    (response/found "/skladiste")))))))))))
+
+;OBRISI GUME
+(defn delete-gume! [{:keys [params]}]
+   (let [errors (validate-delete params)]
+     (if errors
+       (-> (response/found "/izbrisiGume")
+           (assoc :flash (assoc params :errors errors)))
+       (let [gume (db/get-gume-by-id {:id (:id params)})]
+         (if-not gume
+           (-> (response/found "/izbrisiGume")
+               (assoc :flash (assoc params :errors {:id "Place with ID doesnt exist!!"})))
+           (do
+             (db/oslobodi-mesto! {:id (:idmesto gume)})
+             (db/delete-gume! params)
+             (response/found "/skladiste")))))))
 
 ;-----------------------------------------------------------------------------------------
 ; --- RUTIRANJE --------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------------------
 
-
 (defn home-routes []
   [""
    {:middleware [middleware/wrap-csrf
                  middleware/wrap-formats]}
-
    ;--API---------
    ["/dodajMusteriju" {:post create-musterija!}]
    ["/editujMusteriju" {:post update-musterija!}]
    ["/obrisiMusteriju" {:post delete-musterija!}]
    ;-------
    ["/dodajMesto" {:post create-mesto!}]
-   ["/izmeniMusteriju" {:get updateMusterija-page}]
-   ["/izbrisiMusteriju" {:get deleteMusterija-page}]
+   ["/editujMesto" {:post update-mesto!}]
+   ["/obrisiMesto" {:post delete-mesto!}]
+   ;-------
+   ["/dodajGume" {:post create-gume!}]
+   ["/editujGume" {:post update-gume!}]
+   ["/obrisiGume" {:post delete-gume!}]
+
 
    ;--STRANICE------
    ["/" {:get home-page}]
@@ -309,6 +476,9 @@
    ["/dodavanjeMesta" {:get createMesto-page}]
    ["/izmeniMesto" {:get updateMesto-page}]
    ["/izbrisiMesto" {:get deleteMesto-page}]
-      ;-------
+   ;-------
+   ["/skladiste" {:get skladiste-page}]
+   ["/dodavanjeGuma" {:get createGume-page}]
+   ["/izmeniGume" {:get updateGume-page}]
+   ["/izbrisiGume" {:get deleteGume-page}]
    ])
-

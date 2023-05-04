@@ -64,6 +64,51 @@ SELECT * from mesto WHERE zauzeto = 0 AND id = :id
 --------------------------------------
 --------------------------------------
 
+-- :name create-gume! :! :n
+-- :doc kreira nove gume u skladistu
+    INSERT INTO skladiste
+(sirina, profil, precnik, dot, sezona, kolicina, idMusterije, idMesto)
+VALUES (:sirina, :profil, :precnik, :dot, :sezona, :kolicina, :idMusterije, :idMesto)
+
+-- :name get-gume :? :*
+-- :doc prikazuje listu svih guma
+SELECT skladiste.*, musterije.ime, musterije.prezime, mesto.red, mesto.kolona, mesto.sprat
+FROM skladiste
+         INNER JOIN musterije ON skladiste.idMusterije = musterije.id
+         INNER JOIN mesto ON skladiste.idMesto = mesto.id;
+
+
+-- :name update-gume! :! :n
+-- :doc izmenjuje gume koje imaju uneti id
+UPDATE skladiste
+SET sirina = :sirina, profil = :profil, precnik = :precnik, dot = :dot, sezona = :sezona, kolicina = :kolicina, idMusterije = :idMusterije, idMesto = :idMesto
+WHERE id = :id
+
+-- :name delete-gume! :! :n
+-- :doc brise gume koje imaju uneti id
+DELETE FROM skladiste
+WHERE id = :id
+
+-- :name get-gume-by-id :? :1
+-- :doc prikazuje gume koje imaju uneti id
+SELECT * FROM skladiste
+WHERE id = :id
+
+--------------------------------------
+--------------------------------------
+
+-- :name popuni-mesto! :! :2
+-- :doc dodaje gume na odredjeno mesto
+UPDATE mesto
+SET zauzeto = :kolicina
+WHERE id = :id;
+
+-- :name oslobodi-mesto! :! :1
+-- :doc oslobadja odredjeno mesto
+UPDATE mesto
+SET zauzeto = 0
+WHERE id = :id;
+
 -- :name proveri-mesto :! :1
 -- :doc proveri da li je mesto slobodno pre brisanja mesta
 SELECT * FROM skladiste
@@ -73,3 +118,5 @@ WHERE idMesto = :idMesto
 -- :doc proveri da li je musterija ima rezervacije pre brisanja musterija
 SELECT * FROM skladiste
 WHERE idMusterije = :idMusterije
+
+

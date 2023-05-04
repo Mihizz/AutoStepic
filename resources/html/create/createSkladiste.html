@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="columns is-centered">
+        <div class="column is-three-thirds">
+            <h1>DODAVANJE GUMA</h1>
+            <div class="columns">
+                <div class="column">
+                    <form method="POST" action="/dodajGume">
+                        {% csrf-field %}
+                        <div class="field">
+                            <label class="label" for="sirina">
+                                Sirina
+                            </label>
+                            {% if errors.sirina %}
+                            <div class="notification is-danger">
+                                {{errors.sirina|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="sirina"
+                                   name="sirina"
+                                   value="{{sirina}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="profil">
+                                Profil
+                            </label>
+                            {% if errors.profil %}
+                            <div class="notification is-danger">
+                                {{errors.profil|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="profil"
+                                   name="profil"
+                                   value="{{profil}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="precnik">
+                                Precnik
+                            </label>
+                            {% if errors.precnik %}
+                            <div class="notification is-danger">
+                                {{errors.precnik|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="precnik"
+                                   name="precnik"
+                                   value="{{precnik}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="dot">
+                                Godina proizvodnje
+                            </label>
+                            {% if errors.dot %}
+                            <div class="notification is-danger">
+                                {{errors.dot|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="dot"
+                                   name="dot"
+                                   value="{{dot}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="sezona">
+                                Sezona
+                            </label>
+                            <label>Letnja</label>
+                            <input class="radio"
+                                   style="margin-left: 7px"
+                                   type="radio"
+                                   id="letnja"
+                                   name="sezona"
+                                   value="letnja" checked/><br>
+                            <label>Zimska</label>
+                            <input class="radio"
+                                   type="radio"
+                                   id="zimska"
+                                   name="sezona"
+                                   value="zimska" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="kolicina">
+                                Kolicina
+                            </label>
+                            {% if errors.kolicina %}
+                            <div class="notification is-danger">
+                                {{errors.kolicina|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="kolicina"
+                                   name="kolicina"
+                                   value="{{kolicina}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="idMusterije">
+                                ID musterije
+                            </label>
+                            {% if errors.idMusterije %}
+                            <div class="notification is-danger">
+                                {{errors.idMusterije|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="idMusterije"
+                                   name="idMusterije"
+                                   value="{{idMusterije}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="idMesto">
+                                ID Mesta
+                            </label>
+                            {% if errors.idMesto %}
+                            <div class="notification is-danger">
+                                {{errors.idMesto|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   id="idMesto"
+                                   name="idMesto"
+                                   value="{{idMesto}}" />
+                        </div>
+                        <input type="submit"
+                               class="button is-primary"
+                               value="Dodaj gume!" />
+                        </form>
+                    </div>
+                    <div class="column">
+                        <h4>Lista mušterija</h4>
+                        <div class="list listView">
+                            <ul class="listItem">
+                                {% for item in musterije %}
+                                <li>
+                                    <b>ID: {{item.id}}</b> || {{item.ime}} {{item.prezime}}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <h4>Lista slobodnih mesta</h4>
+                        <div class="list listView">
+                            <ul class="listItem">
+                                {% for item in mesta %}
+                                <li>
+                                    <b>ID: {{item.id}}</b> || {{item.red}}{{item.kolona}}/{{item.sprat}}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
