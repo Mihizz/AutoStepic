@@ -37,6 +37,30 @@ VALUES (:red, :kolona, :sprat, 0)
 -- :doc prikazuje listu svih mesta
 SELECT * from mesto
 
+-- :name get-slobodna-mesta :? :*
+-- :doc prikazuje listu svih slobodnih mesta
+SELECT * from mesto WHERE zauzeto = 0
+
+-- :name update-mesto! :! :n
+-- :doc izmenjuje mesto koje ima uneti id
+UPDATE mesto
+SET red = :red, kolona = :kolona, sprat = :sprat
+WHERE id = :id
+
+-- :name delete-mesto! :! :n
+-- :doc brise mesto koje ima uneti id
+DELETE FROM mesto
+WHERE id = :id
+
+-- :name get-mesto-by-id :? :1
+-- :doc prikazuje mesto koje ima uneti id
+SELECT * FROM mesto
+WHERE id = :id
+
+-- :name get-slobodna-mesta-by-id :? :1
+-- :doc prikazuje listu svih slobodnih mesta
+SELECT * from mesto WHERE zauzeto = 0 AND id = :id
+
 --------------------------------------
 --------------------------------------
 

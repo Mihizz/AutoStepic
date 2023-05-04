@@ -61,6 +61,22 @@
      "create/createMesto.html"
      (select-keys flash [:red :kolona :sprat :errors])))
 
+;IZMENI MESTO
+(defn updateMesto-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "edit/editMesto.html"
+     (select-keys flash [:id :red :kolona :sprat :errors])))
+
+;IZBRISI MESTO
+(defn deleteMesto-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "delete/deleteMesto.html"
+     (select-keys flash [:id :errors])))
+
+;------------------------------------------------
+
 ;---------------------------------------------------------------------------------
 ; --- SHEMA ----------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -120,6 +136,26 @@
   		{:message "Floor must be positive number!"
          :validate (fn [sprat] (> (Integer/parseInt (re-find #"\A-?\d+" sprat)) 0))}]])
 
+;MESTO(UPDATE)
+(def mestoU-schema
+    [[:id
+  		st/required
+  		{:message "ID must be positive number!"
+        :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]
+  	[:red
+      	st/required
+      	st/string
+      	{:message "Row must be single character (A-Z)"
+         :validate (fn [red] (= (count red) 1))}]
+    [:kolona
+        st/required
+      	{:message "Column must be positive number!"
+         :validate (fn [kolona] (> (Integer/parseInt (re-find #"\A-?\d+" kolona)) 0))}]
+    [:sprat
+      	st/required
+      	{:message "Floor must be positive number!"
+         :validate (fn [sprat] (> (Integer/parseInt (re-find #"\A-?\d+" sprat)) 0))}]])
+
 
 ;---------------------------------------------------------------------------------
 ; --- VALIDACIJA -----------------------------------------------------------------
@@ -133,7 +169,7 @@
 (defn validate-musterijaU [params]
 (first (st/validate params musterijaU-schema)))
 
-
+;-----------------------------
 
 ;(DELETE)
 (defn validate-delete [params]
@@ -144,6 +180,12 @@
 ;MESTO(INSERT)
 (defn validate-mestoI [params]
 (first (st/validate params mestoI-schema)))
+
+;MESTO(UPDATE)
+(defn validate-mestoU [params]
+(first (st/validate params mestoU-schema)))
+
+; ---------------------------
 
 ;---------------------------------------------------------------------------------
 ; --- METODE ---------------------------------------------------------------------
@@ -201,6 +243,40 @@
         (db/create-mesto! params)
         (response/found "/mesta"))))
 
+;UPDATE MESTO
+(defn update-mesto! [{:keys [params]}]
+   (let [errors (validate-mestoU params)]
+     (if errors
+       (-> (response/found "/izmeniMesto")
+           (assoc :flash (assoc params :errors errors)))
+       (let [mesto (db/get-mesto-by-id {:id (:id params)})]
+         (if-not mesto
+           (-> (response/found "/izmeniMesto")
+               (assoc :flash (assoc params :errors {:id "Place with ID doesnt exist!!"})))
+           (do
+             (db/update-mesto! params)
+             (response/found "/mesta")))))))
+
+;OBRISI MESTO
+(defn delete-mesto! [{:keys [params]}]
+   (let [errors (validate-delete params)]
+     (if errors
+       (-> (response/found "/izbrisiMesto")
+           (assoc :flash (assoc params :errors errors)))
+       (let [mesto (db/get-mesto-by-id {:id (:id params)})]
+         (if-not mesto
+           (-> (response/found "/izbrisiMesto")
+               (assoc :flash (assoc params :errors {:id "Place with ID doesnt exist!!"})))
+           (let [gumeMesta (db/proveri-mesto {:idMesto (:id params)})]
+                (if gumeMesta
+                    (-> (response/found "/izbrisiMesto")
+                    (assoc :flash (assoc params :errors {:id "Place still has tiers left in it!!"})))
+                (do
+                (db/delete-mesto! params)
+                (response/found "/mesta")))))))))
+
+;---------------------------------------------------------------------------------
+
 
 ;-----------------------------------------------------------------------------------------
 ; --- RUTIRANJE --------------------------------------------------------------------------
@@ -218,6 +294,8 @@
    ["/obrisiMusteriju" {:post delete-musterija!}]
    ;-------
    ["/dodajMesto" {:post create-mesto!}]
+   ["/izmeniMusteriju" {:get updateMusterija-page}]
+   ["/izbrisiMusteriju" {:get deleteMusterija-page}]
 
    ;--STRANICE------
    ["/" {:get home-page}]
@@ -229,4 +307,8 @@
    ;-------
    ["/mesta" {:get mesta-page}]
    ["/dodavanjeMesta" {:get createMesto-page}]
+   ["/izmeniMesto" {:get updateMesto-page}]
+   ["/izbrisiMesto" {:get deleteMesto-page}]
+      ;-------
+   ])
 

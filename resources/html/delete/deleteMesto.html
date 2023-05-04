@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            <h1>BRISANJE MESTA</h1>
+            <div class="columns">
+                <div class="column">
+                    <form method="POST" action="/obrisiMesto">
+                        {% csrf-field %}
+                        <div class="field">
+                            <label class="label" for="id">
+                                ID mesta
+                            </label>
+                            {% if errors.id %}
+                            <div class="notification is-danger">
+                                {{errors.id|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="number"
+                                   name="id"
+                                   value="{{id}}" />
+                        </div>
+                        <input type="submit"
+                               class="button is-primary"
+                               value="Obrisi mesto" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
