@@ -31,6 +31,13 @@
      "create/createMusterija.html"
      (select-keys flash [:ime :prezime :email :errors])))
 
+;IZMENI MUSTERIJU
+(defn updateMusterija-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "edit/editMusterija.html"
+     (select-keys flash [:id :ime :prezime :email :errors])))
+
 ;---------------------------------------------------------------------------------
 ; --- SHEMA ----------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -38,6 +45,22 @@
 ;MUSTERIJA (INSERT)
 (def musterijaI-schema
   	[[:ime
+  		st/required
+  		st/string]
+  	[:prezime
+  		st/required
+  		st/string]
+  	[:email
+  		st/required
+  		st/email]])
+
+;MUSTERIJA(UPDATE)
+(def musterijaU-schema
+    [[:id
+  		st/required
+  		{:message "ID must be positive number!"
+        :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]
+  	[:ime
   		st/required
   		st/string]
   	[:prezime
@@ -55,6 +78,10 @@
 (defn validate-musterijaI [params]
 (first (st/validate params musterijaI-schema)))
 
+;MUSTERIJA(UPDATE)
+(defn validate-musterijaU [params]
+(first (st/validate params musterijaU-schema)))
+
 ;---------------------------------------------------------------------------------
 ; --- METODE ---------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -68,6 +95,20 @@
         (db/create-musterija! params)
         (response/found "/musterije"))))
 
+;UPDATE MUSTERIJE
+(defn update-musterija! [{:keys [params]}]
+   (let [errors (validate-musterijaU params)]
+     (if errors
+       (-> (response/found "/izmeniMusteriju")
+           (assoc :flash (assoc params :errors errors)))
+       (let [musterija (db/get-musterija-by-id {:id (:id params)})]
+         (if-not musterija
+           (-> (response/found "/izmeniMusteriju")
+               (assoc :flash (assoc params :errors {:id "User with ID doesnt exist!!"})))
+           (do
+             (db/update-musterija! params)
+             (response/found "/musterije")))))))
+
 ;-----------------------------------------------------------------------------------------
 ; --- RUTIRANJE --------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------------------
@@ -80,10 +121,12 @@
 
    ;--API---------
    ["/dodajMusteriju" {:post create-musterija!}]
+   ["/editujMusteriju" {:post update-musterija!}]
 
    ;--STRANICE------
    ["/" {:get home-page}]
    ;-------
    ["/musterije" {:get musterije-page}]
    ["/dodavanjeMusterije" {:get createMusterija-page}]
+   ["/izmeniMusteriju" {:get updateMusterija-page}]
 
