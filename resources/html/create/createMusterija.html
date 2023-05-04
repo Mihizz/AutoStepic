@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="content">
+    <div class="columns is-centered">
+        <div class="column is-two-thirds">
+            <h1>DODAVANJE MUSTERIJE</h1>
+            <div class="columns">
+                <div class="column">
+                    <form method="POST" action="/dodajMusteriju">
+                        {% csrf-field %}
+                        <div class="field">
+                            <label class="label" for="ime">
+                                Ime
+                            </label>
+                            {% if errors.ime %}
+                            <div class="notification is-danger">
+                                {{errors.ime|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="text"
+                                   name="ime"
+                                   value="{{ime}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="prezime">
+                                Prezime
+                            </label>
+                            {% if errors.prezime %}
+                            <div class="notification is-danger">
+                                {{errors.prezime|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="text"
+                                   name="prezime"
+                                   value="{{prezime}}" />
+                        </div>
+                        <div class="field">
+                            <label class="label" for="email">
+                                Email
+                            </label>
+                            {% if errors.email %}
+                            <div class="notification is-danger">
+                                {{errors.email|join}}
+                            </div>
+                            {% endif %}
+                            <input class="input"
+                                   type="text"
+                                   name="email"
+                                   value="{{email}}" />
+                        </div>
+                        <input type="submit"
+                               class="button is-primary"
+                               value="Dodaj musteriju" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
