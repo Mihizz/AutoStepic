@@ -38,6 +38,13 @@
      "edit/editMusterija.html"
      (select-keys flash [:id :ime :prezime :email :errors])))
 
+;IZBRISI MUSTERIJU
+(defn deleteMusterija-page [{:keys [flash] :as request}]
+  (layout/render
+     request
+     "delete/deleteMusterija.html"
+     (select-keys flash [:id :errors])))
+
 ;---------------------------------------------------------------------------------
 ; --- SHEMA ----------------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -70,6 +77,15 @@
   		st/required
   		st/email]])
 
+;-----------------------------------------
+
+ ;(DELETE)
+ (def delete-schema
+     [[:id
+   		st/required
+   		{:message "ID must be positive number!"
+         :validate (fn [id] (> (Integer/parseInt (re-find #"\A-?\d+" id)) 0))}]])
+
 ;---------------------------------------------------------------------------------
 ; --- VALIDACIJA -----------------------------------------------------------------
 ;---------------------------------------------------------------------------------
@@ -81,6 +97,12 @@
 ;MUSTERIJA(UPDATE)
 (defn validate-musterijaU [params]
 (first (st/validate params musterijaU-schema)))
+
+;-----------------------------
+
+;(DELETE)
+(defn validate-delete [params]
+(first (st/validate params delete-schema)))
 
 ;---------------------------------------------------------------------------------
 ; --- METODE ---------------------------------------------------------------------
@@ -109,6 +131,24 @@
              (db/update-musterija! params)
              (response/found "/musterije")))))))
 
+;OBRISI MUSTERIJU
+(defn delete-musterija! [{:keys [params]}]
+   (let [errors (validate-delete params)]
+     (if errors
+       (-> (response/found "/izbrisiMusteriju")
+           (assoc :flash (assoc params :errors errors)))
+       (let [musterija (db/get-musterija-by-id {:id (:id params)})]
+         (if-not musterija
+           (-> (response/found "/izbrisiMusteriju")
+               (assoc :flash (assoc params :errors {:id "User with ID doesnt exist!!"})))
+           (let [gumeMusterije (db/proveri-musteriju {:idMusterije (:id params)})]
+                (if gumeMusterije
+                    (-> (response/found "/izbrisiMusteriju")
+                    (assoc :flash (assoc params :errors {:id "User still has tiers left in stock!!"})))
+                (do
+                (db/delete-musterija! params)
+                (response/found "/musterije")))))))))
+
 ;-----------------------------------------------------------------------------------------
 ; --- RUTIRANJE --------------------------------------------------------------------------
 ;-----------------------------------------------------------------------------------------
@@ -122,6 +162,7 @@
    ;--API---------
    ["/dodajMusteriju" {:post create-musterija!}]
    ["/editujMusteriju" {:post update-musterija!}]
+   ["/obrisiMusteriju" {:post delete-musterija!}]
 
    ;--STRANICE------
    ["/" {:get home-page}]
@@ -129,4 +170,5 @@
    ["/musterije" {:get musterije-page}]
    ["/dodavanjeMusterije" {:get createMusterija-page}]
    ["/izmeniMusteriju" {:get updateMusterija-page}]
+   ["/izbrisiMusteriju" {:get deleteMusterija-page}]
 

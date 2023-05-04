@@ -14,7 +14,15 @@ UPDATE musterije
 SET ime = :ime, prezime = :prezime, email = :email
 WHERE id = :id
 
+-- :name delete-musterija! :! :n
+-- :doc brise musteriju koja ima uneti id
+DELETE FROM musterije
+WHERE id = :id
+
 -- :name get-musterija-by-id :? :1
 -- :doc prikazuje musteriju koja ima uneti id
 SELECT * FROM musterije
 WHERE id = :id
+
+--------------------------------------
+--------------------------------------
