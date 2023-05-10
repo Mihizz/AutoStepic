@@ -31,7 +31,9 @@ Aplikacija predstavlja prilagodjenu verziju baze podataka koja bi olaksala vulka
 
 ### 3. Sta je hotel guma?
 Hotel guma predstavlja skladistenje guma po svim standardima , uzimajući u obzir način skladištenja, sortiranje i numerisanje guma. Nastao je kao potreba musterija da ostave svoje vansezonske gume kod vulkanizera sa 2 cilja:
+
 • Kako ne bi gume nepotrebno zauzimale mesto u stanu ili podrumu musterije
+
 • Kako bi olaksalo musteriji promenu guma
 
 ### 4. Koje su sve funkcionalnosti aplikacije?
@@ -41,8 +43,11 @@ Vulkanizer moze da kreira musterije i moze nad njima da vrsi osnovne CRUD operac
 Najveći izazov je bio sam programski jezik Clojure. Razlog je to što se do dosadašnjeg školovanja nisam susretao sa Lisp jezicima niti njihovim interaktivnim developmentom. Nakon učenja njegovih osnovnih funkcionalnosti u konzolnim aplikacijama, prešao sam na izradu web aplikacije prateći uputstva pomenute knjige. Knjiga vrlo detaljno objašnjava pokretanje web aplikacije preko Leiningen alata, kreiranja tabela i njenih upita, ali sam imao problema prilikom kreiranja CRUD operacija nad entitetima iz tabela.
 
 Problemi kojima sam posvetio najviše vremena za rešavanje su:
+
 • API metode
+
 • prikupljanje podataka iz URL-a
+
 • Problem sa Lock migracijama
 
 Prvi problem: Svaki pokušaj pozivanja bilo koje API metode osim GET i POST je predstavljao problem. Metode PUT i DELETE (koje se univerzalno koriste za izmenu i brisanje entiteta iz baze) nisu radile. Kako bih rešio ovaj problem, za sve API pozive koje bi vršile izmenu nad tabelom u bazi podataka sam koristio POST metodu.
