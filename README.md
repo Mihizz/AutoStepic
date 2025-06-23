@@ -1,6 +1,6 @@
 # autostepic
 
-Opis: Projekat za skladištenje guma rađen u Clojure programskom kodu
+Description: Project for storing tires written in Clojure
 
 Generated using Luminus version "3.91"
 
